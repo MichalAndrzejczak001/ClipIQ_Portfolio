@@ -3,6 +3,7 @@ private/
 
 # IDE
 .idea/
+.claude/
 
 # Compiled class file
 *.class
