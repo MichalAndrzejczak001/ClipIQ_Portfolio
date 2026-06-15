@@ -20,6 +20,18 @@ configurations {
 }
 
 repositories {
+    exclusiveContent {
+        forRepositories(maven {
+            name = "MavenCentralPomOnly"
+            url = uri("https://repo.maven.apache.org/maven2")
+            metadataSources {
+                mavenPom()
+            }
+        })
+        filter {
+            includeModule("org.yaml", "snakeyaml")
+        }
+    }
     mavenCentral()
 }
 
@@ -47,7 +59,9 @@ dependencies {
     testImplementation("io.qameta.allure:allure-junit5:2.23.0")
     testImplementation("io.qameta.allure:allure-testng:2.23.0")
     testImplementation("io.qameta.allure:allure-cucumber7-jvm:2.23.0")
-    testImplementation("com.github.javafaker:javafaker:1.0.2")
+    testImplementation("com.github.javafaker:javafaker:1.0.2") {
+        exclude(group = "org.yaml", module = "snakeyaml")
+    }
     testImplementation("io.rest-assured:rest-assured:5.3.2")
     testImplementation("io.rest-assured:json-schema-validator:5.3.2")
     testImplementation("org.testng:testng:7.8.0")
