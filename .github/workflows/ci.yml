@@ -68,7 +68,7 @@ jobs:
   frontend:
     name: Frontend (React)
     runs-on: ubuntu-latest
-    if: hashFiles('frontend/package.json') != ''
+    if: ${{ hashFiles('frontend/package.json') != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -87,14 +87,14 @@ jobs:
         working-directory: frontend
 
       - name: Test
-        run: npm test -- --watchAll=false
+        run: npm test
         working-directory: frontend
 
   selenium:
     name: Selenium E2E
     runs-on: ubuntu-latest
     needs: [backend, ai-service]
-    if: hashFiles('selenium_tests/requirements.txt') != ''
+    if: ${{ hashFiles('selenium_tests/requirements.txt') != '' }}
     steps:
       - uses: actions/checkout@v4
 
