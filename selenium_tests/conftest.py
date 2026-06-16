@@ -4,15 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-def pytest_addoption(parser):
-    parser.addoption("--base-url", default="http://localhost:3000")
-
-
-@pytest.fixture(scope="session")
-def base_url(request):
-    return request.config.getoption("--base-url")
-
-
 @pytest.fixture(scope="session", autouse=True)
 def require_app(base_url):
     try:
