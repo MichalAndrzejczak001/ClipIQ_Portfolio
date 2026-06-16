@@ -9,7 +9,7 @@ def require_app(base_url):
     try:
         requests.get(base_url, timeout=5)
     except Exception:
-        pytest.skip(f"Application not running at {base_url}")
+        pytest.exit(f"Skipping selenium suite — app not running at {base_url}", returncode=0)
 
 
 @pytest.fixture
