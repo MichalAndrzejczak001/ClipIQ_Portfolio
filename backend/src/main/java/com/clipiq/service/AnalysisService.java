@@ -6,6 +6,8 @@ import com.clipiq.model.FileType;
 import com.clipiq.model.Status;
 import com.clipiq.repository.AnalysisRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor
 public class AnalysisService {
+
+    private static final Logger log = LoggerFactory.getLogger(AnalysisService.class);
 
     private final AnalysisRepository analysisRepository;
     private final AiClientService aiClientService;
@@ -81,6 +85,7 @@ public class AnalysisService {
             messagingTemplate.convertAndSend("/topic/analysis/" + uuid + "/done", "");
 
         } catch (Exception e) {
+            log.error("Analysis {} failed: {}", uuid, e.getMessage(), e);
             analysis.setStatus(Status.FAILED);
             analysis.setFinishDate(Instant.now());
             analysisRepository.save(analysis);
