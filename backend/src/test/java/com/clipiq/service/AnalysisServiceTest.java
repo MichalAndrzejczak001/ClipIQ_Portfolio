@@ -17,6 +17,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -112,5 +115,16 @@ class AnalysisServiceTest {
         verify(analysisRepository).save(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(Status.FAILED);
         assertThat(captor.getValue().getFinishDate()).isNotNull();
+    }
+
+    @Test
+    void process_unknownUuid_sendsFailedWithoutSaving() {
+        String uuid = "does-not-exist";
+        when(analysisRepository.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        analysisService.process(uuid);
+
+        verify(analysisRepository, never()).save(any());
+        verify(messagingTemplate).convertAndSend(eq("/topic/analysis/" + uuid + "/failed"), anyString());
     }
 }

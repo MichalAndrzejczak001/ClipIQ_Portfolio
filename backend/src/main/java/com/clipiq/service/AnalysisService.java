@@ -56,9 +56,11 @@ public class AnalysisService {
 
     @Async
     public void process(String uuid) {
-        Analysis analysis = analysisRepository.findByUuid(uuid)
-                .orElseThrow(() -> new RuntimeException("Analysis not found: " + uuid));
+        Analysis analysis = null;
         try {
+            analysis = analysisRepository.findByUuid(uuid)
+                    .orElseThrow(() -> new RuntimeException("Analysis not found: " + uuid));
+
             sendProgress(uuid, "0");
 
             byte[] audioBytes = resolveAudio(analysis);
@@ -86,9 +88,11 @@ public class AnalysisService {
 
         } catch (Exception e) {
             log.error("Analysis {} failed: {}", uuid, e.getMessage(), e);
-            analysis.setStatus(Status.FAILED);
-            analysis.setFinishDate(Instant.now());
-            analysisRepository.save(analysis);
+            if (analysis != null) {
+                analysis.setStatus(Status.FAILED);
+                analysis.setFinishDate(Instant.now());
+                analysisRepository.save(analysis);
+            }
             messagingTemplate.convertAndSend(
                     "/topic/analysis/" + uuid + "/failed",
                     "Przetwarzanie nie powiodło się. Spróbuj ponownie."
