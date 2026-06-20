@@ -10,8 +10,9 @@ Upload a file or paste a link — ClipIQ downloads the audio, transcribes it, su
 1. You upload an MP3/MP4 file or a YouTube/TikTok URL
 2. The backend downloads/converts the audio and sends it to the AI service
 3. OpenAI Whisper transcribes the speech to text
-4. GPT-4o-mini generates a summary and sentiment label
-5. Results appear in real time via WebSocket — no need to refresh the page
+4. GPT-3.5-turbo summarizes the transcript, and VADER (an offline sentiment lexicon, no extra API call) labels the author's attitude as positive, negative, or neutral
+5. Results appear in real time via WebSocket — no need to refresh the page, with a live progress bar
+6. Every analysis is saved to a local history (searchable, with PDF export and browser notifications)
 
 ---
 
@@ -21,7 +22,7 @@ Upload a file or paste a link — ClipIQ downloads the audio, transcribes it, su
 |---|---|
 | Frontend | React 18, Vite, TypeScript, Tailwind CSS, SockJS + STOMP |
 | Backend | Spring Boot 3.2, Spring Data MongoDB, Spring WebSocket |
-| AI Service | FastAPI, OpenAI Whisper API, GPT-4o-mini |
+| AI Service | FastAPI, OpenAI Whisper API, GPT-3.5-turbo, VADER (offline sentiment) |
 | Database | MongoDB 7 |
 | Infrastructure | Docker, Docker Compose, nginx |
 | CI | GitHub Actions |
