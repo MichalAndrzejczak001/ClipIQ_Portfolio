@@ -4,17 +4,22 @@ import SockJS from 'sockjs-client'
 
 interface Options {
   uuid: string
+  onProgress?: (progress: number) => void
   onDone: () => void
   onFailed: (message: string) => void
 }
 
-export function useWebSocket({ uuid, onDone, onFailed }: Options) {
+export function useWebSocket({ uuid, onProgress, onDone, onFailed }: Options) {
   const clientRef = useRef<Client | null>(null)
 
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () => new SockJS('/ws') as WebSocket,
       onConnect: () => {
+        client.subscribe(`/topic/analysis/${uuid}/progress`, (frame) => {
+          const value = parseInt(frame.body, 10)
+          if (!Number.isNaN(value)) onProgress?.(value)
+        })
         client.subscribe(`/topic/analysis/${uuid}/done`, () => onDone())
         client.subscribe(`/topic/analysis/${uuid}/failed`, (frame) =>
           onFailed(frame.body),
@@ -29,5 +34,5 @@ export function useWebSocket({ uuid, onDone, onFailed }: Options) {
     return () => {
       client.deactivate()
     }
-  }, [uuid, onDone, onFailed])
+  }, [uuid, onProgress, onDone, onFailed])
 }

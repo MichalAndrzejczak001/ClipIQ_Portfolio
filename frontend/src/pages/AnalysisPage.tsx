@@ -3,38 +3,65 @@ import { useParams, Link } from 'react-router-dom'
 import type { Analysis } from '../types'
 import { fetchAnalysis } from '../api/client'
 import { useWebSocket } from '../hooks/useWebSocket'
+import { useAnalyseDataSaver } from '../hooks/useAnalyseDataSaver'
+import { useSystemNotificationSender } from '../hooks/useSystemNotificationSender'
 import ResultCard from '../components/ResultCard'
 
 type PageState = 'loading' | 'processing' | 'done' | 'failed'
+
+const PROGRESS_LABELS: Record<number, string> = {
+  0: 'Inicjalizacja...',
+  20: 'Pobieranie pliku audio...',
+  40: 'Transkrypcja (Whisper)...',
+  60: 'Streszczanie (GPT)...',
+  80: 'Analiza sentymentu (VADER)...',
+  100: 'Zapisywanie wyników...',
+}
 
 export default function AnalysisPage() {
   const { uuid } = useParams<{ uuid: string }>()
   const [state, setState] = useState<PageState>('loading')
   const [analysis, setAnalysis] = useState<Analysis | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
+  const [progress, setProgress] = useState(0)
+
+  const { downloadPdf, copySummary } = useAnalyseDataSaver()
+  const { sendNotification } = useSystemNotificationSender()
 
   const refresh = useCallback(async () => {
     if (!uuid) return
     const { data } = await fetchAnalysis(uuid)
     setAnalysis(data)
-    if (data.status === 'SUCCESS') setState('done')
-    else if (data.status === 'FAILED') { setState('failed'); setErrorMsg('Analiza nie powiodła się.') }
-    else setState('processing')
+    if (data.status === 'SUCCESS') {
+      setState('done')
+      sendNotification(data)
+    } else if (data.status === 'FAILED') {
+      setState('failed')
+      setErrorMsg('Analiza nie powiodła się.')
+    } else {
+      setState('processing')
+    }
   }, [uuid])
 
   useEffect(() => { refresh() }, [refresh])
 
+  const onProgress = useCallback((value: number) => setProgress(value), [])
   const onDone = useCallback(() => { refresh() }, [refresh])
   const onFailed = useCallback((msg: string) => { setState('failed'); setErrorMsg(msg) }, [])
 
-  useWebSocket({ uuid: uuid ?? '', onDone, onFailed })
+  useWebSocket({ uuid: uuid ?? '', onProgress, onDone, onFailed })
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-2xl">
-        <Link to="/" className="text-slate-500 hover:text-brand-400 text-sm transition-colors mb-6 inline-block">
-          ← Nowa analiza
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link to="/" className="text-slate-500 hover:text-brand-400 text-sm transition-colors">
+            ← Nowa analiza
+          </Link>
+          <Link to="/history" className="text-slate-500 hover:text-brand-400 text-sm transition-colors">
+            Historia →
+          </Link>
+        </div>
 
         <div className="bg-slate-900 rounded-2xl shadow-2xl p-8">
           {state === 'loading' && (
@@ -43,11 +70,16 @@ export default function AnalysisPage() {
 
           {state === 'processing' && (
             <div className="text-center space-y-4">
-              <p className="text-slate-300 text-lg font-medium">Analizuję plik…</p>
+              <p className="text-slate-300 text-lg font-medium">
+                {PROGRESS_LABELS[progress] ?? 'Analizuję plik…'}
+              </p>
               <div className="w-full bg-slate-800 rounded-full h-2">
-                <div className="bg-brand-500 h-2 rounded-full animate-pulse w-2/3" />
+                <div
+                  className="bg-brand-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
-              <p className="text-slate-500 text-sm">To może potrwać kilka minut</p>
+              <p className="text-slate-500 text-sm">{progress}% — to może potrwać kilka minut</p>
             </div>
           )}
 
@@ -59,7 +91,24 @@ export default function AnalysisPage() {
           )}
 
           {state === 'done' && analysis && (
-            <ResultCard analysis={analysis} />
+            <div className="space-y-6">
+              <ResultCard analysis={analysis} />
+              <div className="flex gap-3 pt-4 border-t border-slate-800">
+                <button
+                  onClick={() => copySummary(analysis)}
+                  disabled={!analysis.videoSummary}
+                  className="flex-1 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-sm font-medium transition-colors"
+                >
+                  Kopiuj streszczenie
+                </button>
+                <button
+                  onClick={() => downloadPdf(analysis)}
+                  className="flex-1 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-sm font-medium transition-colors"
+                >
+                  Pobierz PDF
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
