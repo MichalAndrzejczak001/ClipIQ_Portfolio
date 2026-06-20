@@ -28,7 +28,9 @@ export default function UploadForm({ onSubmit }: Props) {
         onSubmit(data.analysisUuid)
       }
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 400) {
+      if (axios.isAxiosError(err) && err.response?.status === 413) {
+        setError('Plik jest za duży. Maksymalny rozmiar to 15 MB.')
+      } else if (axios.isAxiosError(err) && err.response?.status === 400) {
         setError(
           mode === 'file'
             ? 'Niewspierany format pliku lub uszkodzony plik. Użyj MP3 lub MP4.'

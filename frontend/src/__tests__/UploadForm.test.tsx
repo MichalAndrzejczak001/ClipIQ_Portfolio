@@ -63,6 +63,23 @@ describe('UploadForm', () => {
     )
   })
 
+  it('shows a specific message when the file is too large (HTTP 413)', async () => {
+    mockedRegisterFile.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 413 },
+    })
+
+    const { container } = render(<UploadForm onSubmit={jest.fn()} />)
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement
+    const file = new File(['x'], 'huge-video.mp4', { type: 'video/mp4' })
+    await userEvent.upload(fileInput, file)
+    await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
+
+    await waitFor(() =>
+      expect(screen.getByText(/Plik jest za duży/)).toBeInTheDocument(),
+    )
+  })
+
   it('shows error when submitting file mode without selecting a file', async () => {
     render(<UploadForm onSubmit={jest.fn()} />)
     await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
