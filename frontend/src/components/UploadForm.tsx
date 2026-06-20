@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import axios from 'axios'
 import { registerFile, registerUrl } from '../api/client'
 
 interface Props {
@@ -26,8 +27,16 @@ export default function UploadForm({ onSubmit }: Props) {
         const { data } = await registerFile(file)
         onSubmit(data.analysisUuid)
       }
-    } catch {
-      setError('Błąd serwera. Sprawdź dane i spróbuj ponownie.')
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 400) {
+        setError(
+          mode === 'file'
+            ? 'Niewspierany format pliku lub uszkodzony plik. Użyj MP3 lub MP4.'
+            : 'Nieprawidłowy adres URL. Wklej link do YouTube lub TikTok.',
+        )
+      } else {
+        setError('Błąd serwera. Spróbuj ponownie później.')
+      }
     } finally {
       setLoading(false)
     }

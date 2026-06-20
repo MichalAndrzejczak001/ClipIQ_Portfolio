@@ -47,6 +47,22 @@ describe('UploadForm', () => {
     await waitFor(() => expect(screen.getByText(/Błąd serwera/)).toBeInTheDocument())
   })
 
+  it('shows a specific message for unsupported file format (HTTP 400)', async () => {
+    mockedRegisterUrl.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 400 },
+    })
+
+    render(<UploadForm onSubmit={jest.fn()} />)
+    await userEvent.click(screen.getByText('Link (YouTube/TikTok)'))
+    await userEvent.type(screen.getByPlaceholderText(/youtube/i), 'https://www.youtube.com/watch?v=abc')
+    await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
+
+    await waitFor(() =>
+      expect(screen.getByText(/Nieprawidłowy adres URL/)).toBeInTheDocument(),
+    )
+  })
+
   it('shows error when submitting file mode without selecting a file', async () => {
     render(<UploadForm onSubmit={jest.fn()} />)
     await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
