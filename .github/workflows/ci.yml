@@ -90,7 +90,7 @@ jobs:
   selenium:
     name: Selenium E2E
     runs-on: ubuntu-latest
-    needs: [backend, ai-service]
+    needs: [backend, frontend, ai-service]
     steps:
       - uses: actions/checkout@v4
 
@@ -102,6 +102,33 @@ jobs:
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Create env files for docker compose
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          echo "MONGO_PASSWORD=ci-password" > .env
+          echo "CORS_ALLOWED_ORIGINS=http://localhost:3000" >> .env
+          echo "MAX_FILE_SIZE_MB=15" >> .env
+          echo "OPENAI_API_KEY=sk-test-ci-placeholder" > ai_service/.env
+
+      - name: Start application stack
+        if: steps.check.outputs.exists == 'true'
+        run: docker compose up -d --build
+
+      - name: Wait for frontend to be ready
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000 > /dev/null; then
+              echo "Frontend is up"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/30)"
+            sleep 5
+          done
+          echo "Frontend did not become ready in time"
+          docker compose logs
+          exit 1
 
       - uses: actions/setup-python@v5
         if: steps.check.outputs.exists == 'true'
@@ -134,3 +161,7 @@ jobs:
         with:
           name: allure-results-selenium
           path: selenium_tests/allure-results
+
+      - name: Stop application stack
+        if: always() && steps.check.outputs.exists == 'true'
+        run: docker compose down -v

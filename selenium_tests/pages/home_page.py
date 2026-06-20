@@ -11,6 +11,7 @@ class HomePage:
     _SUBMIT_BTN  = (By.XPATH, "//button[@type='submit']")
     _ERROR_MSG   = (By.CSS_SELECTOR, "p.text-red-400")
     _DROP_ZONE   = (By.XPATH, "//*[contains(text(),'Przeciągnij plik')]")
+    _HISTORY_LINK = (By.XPATH, "//a[contains(text(),'historię')]")
 
     def __init__(self, driver, base_url: str):
         self._driver = driver
@@ -53,3 +54,7 @@ class HomePage:
             return True
         except Exception:
             return False
+
+    def go_to_history(self) -> "HomePage":
+        self._driver.find_element(*self._HISTORY_LINK).click()
+        return self
