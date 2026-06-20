@@ -2,6 +2,7 @@ package com.clipiq.api;
 
 import com.clipiq.repository.AnalysisRepository;
 import com.clipiq.service.AnalysisService;
+import com.github.javafaker.Faker;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
@@ -31,6 +32,8 @@ import static org.mockito.Mockito.when;
 @Feature("Analysis API — REST Assured")
 public class AnalysisApiRestAssuredTest extends AbstractTestNGSpringContextTests {
 
+    private final Faker faker = new Faker();
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -50,11 +53,13 @@ public class AnalysisApiRestAssuredTest extends AbstractTestNGSpringContextTests
     @Story("Register URL response matches JSON schema")
     @Severity(SeverityLevel.CRITICAL)
     public void registerUrl_responseMatchesSchema() {
-        when(analysisService.registerUrl(any())).thenReturn("schema-uuid-1");
+        String uuid = faker.internet().uuid();
+        String videoId = faker.regexify("[A-Za-z0-9_-]{11}");
+        when(analysisService.registerUrl(any())).thenReturn(uuid);
 
         given()
             .contentType(ContentType.JSON)
-            .body("{\"url\":\"https://youtube.com/watch?v=dQw4w9WgXcQ\"}")
+            .body("{\"url\":\"https://youtube.com/watch?v=" + videoId + "\"}")
         .when()
             .post("/register/url")
         .then()
@@ -66,10 +71,12 @@ public class AnalysisApiRestAssuredTest extends AbstractTestNGSpringContextTests
     @Story("Register file response contains non-null analysisUuid")
     @Severity(SeverityLevel.CRITICAL)
     public void registerFile_responseContainsUuid() {
-        when(analysisService.registerFile(any(), any())).thenReturn("schema-uuid-2");
+        String uuid = faker.internet().uuid();
+        String filename = faker.lorem().word() + ".mp3";
+        when(analysisService.registerFile(any(), any())).thenReturn(uuid);
 
         given()
-            .multiPart("file", "audio.mp3", "data".getBytes(), "audio/mpeg")
+            .multiPart("file", filename, "data".getBytes(), "audio/mpeg")
         .when()
             .post("/register/file")
         .then()
@@ -81,9 +88,11 @@ public class AnalysisApiRestAssuredTest extends AbstractTestNGSpringContextTests
     @Story("Register URL with invalid domain returns 400")
     @Severity(SeverityLevel.NORMAL)
     public void registerUrl_invalidDomain_returns400() {
+        String randomPath = faker.lorem().word();
+
         given()
             .contentType(ContentType.JSON)
-            .body("{\"url\":\"https://invalid-domain.com/video\"}")
+            .body("{\"url\":\"https://invalid-domain.com/" + randomPath + "\"}")
         .when()
             .post("/register/url")
         .then()
@@ -107,8 +116,10 @@ public class AnalysisApiRestAssuredTest extends AbstractTestNGSpringContextTests
     @Story("Register file with unsupported extension returns 400")
     @Severity(SeverityLevel.NORMAL)
     public void registerFile_unsupportedExtension_returns400() {
+        String filename = faker.lorem().word() + ".avi";
+
         given()
-            .multiPart("file", "video.avi", "data".getBytes(), "video/x-msvideo")
+            .multiPart("file", filename, "data".getBytes(), "video/x-msvideo")
         .when()
             .post("/register/file")
         .then()

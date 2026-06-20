@@ -2,6 +2,7 @@ package com.clipiq.api;
 
 import com.clipiq.repository.AnalysisRepository;
 import com.clipiq.service.AnalysisService;
+import com.github.javafaker.Faker;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
@@ -31,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Feature("Analysis Controller — TestNG")
 public class AnalysisControllerTestNGTest extends AbstractTestNGSpringContextTests {
 
+    private final Faker faker = new Faker();
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -53,49 +56,58 @@ public class AnalysisControllerTestNGTest extends AbstractTestNGSpringContextTes
     @Story("Register valid MP3 file returns analysisUuid")
     @Severity(SeverityLevel.CRITICAL)
     public void registerFile_smoke_validMp3_returns200() throws Exception {
-        when(analysisService.registerFile(any(), any())).thenReturn("uuid-smoke-mp3");
+        String uuid = faker.internet().uuid();
+        String filename = faker.lorem().word() + ".mp3";
+        when(analysisService.registerFile(any(), any())).thenReturn(uuid);
 
-        MockMultipartFile file = new MockMultipartFile("file", "audio.mp3", "audio/mpeg", "data".getBytes());
+        MockMultipartFile file = new MockMultipartFile("file", filename, "audio/mpeg", "data".getBytes());
         mockMvc.perform(multipart("/register/file").file(file))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.analysisUuid").value("uuid-smoke-mp3"));
+                .andExpect(jsonPath("$.analysisUuid").value(uuid));
     }
 
     @Test(groups = {"regression"})
     @Story("Register valid YouTube URL returns analysisUuid")
     @Severity(SeverityLevel.CRITICAL)
     public void registerUrl_regression_validYoutube_returns200() throws Exception {
-        when(analysisService.registerUrl(any())).thenReturn("uuid-regression-yt");
+        String uuid = faker.internet().uuid();
+        String videoId = faker.regexify("[A-Za-z0-9_-]{11}");
+        when(analysisService.registerUrl(any())).thenReturn(uuid);
 
         mockMvc.perform(post("/register/url")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"url\":\"https://youtube.com/watch?v=dQw4w9WgXcQ\"}"))
+                        .content("{\"url\":\"https://youtube.com/watch?v=" + videoId + "\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.analysisUuid").value("uuid-regression-yt"));
+                .andExpect(jsonPath("$.analysisUuid").value(uuid));
     }
 
     @Test(groups = {"regression"})
     @Story("Register valid TikTok URL returns analysisUuid")
     @Severity(SeverityLevel.NORMAL)
     public void registerUrl_regression_validTiktok_returns200() throws Exception {
-        when(analysisService.registerUrl(any())).thenReturn("uuid-regression-tt");
+        String uuid = faker.internet().uuid();
+        String username = faker.regexify("[a-z0-9_]{6,12}");
+        String videoId = faker.regexify("[0-9]{19}");
+        when(analysisService.registerUrl(any())).thenReturn(uuid);
 
         mockMvc.perform(post("/register/url")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"url\":\"https://tiktok.com/@user/video/123456789\"}"))
+                        .content("{\"url\":\"https://tiktok.com/@" + username + "/video/" + videoId + "\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.analysisUuid").value("uuid-regression-tt"));
+                .andExpect(jsonPath("$.analysisUuid").value(uuid));
     }
 
     @Test(groups = {"regression"})
     @Story("Register MP4 file returns analysisUuid")
     @Severity(SeverityLevel.NORMAL)
     public void registerFile_regression_validMp4_returns200() throws Exception {
-        when(analysisService.registerFile(any(), any())).thenReturn("uuid-regression-mp4");
+        String uuid = faker.internet().uuid();
+        String filename = faker.lorem().word() + ".mp4";
+        when(analysisService.registerFile(any(), any())).thenReturn(uuid);
 
-        MockMultipartFile file = new MockMultipartFile("file", "video.mp4", "video/mp4", "data".getBytes());
+        MockMultipartFile file = new MockMultipartFile("file", filename, "video/mp4", "data".getBytes());
         mockMvc.perform(multipart("/register/file").file(file))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.analysisUuid").value("uuid-regression-mp4"));
+                .andExpect(jsonPath("$.analysisUuid").value(uuid));
     }
 }
