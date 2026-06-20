@@ -52,7 +52,7 @@ class TestUploadFlow:
 
         with allure.step("Verify error message is shown"):
             error = page.error_message()
-            assert "Błąd" in error
+            assert "Nieprawidłowy adres URL" in error
 
     @allure.story("URL validation")
     @allure.severity(allure.severity_level.NORMAL)
@@ -67,7 +67,7 @@ class TestUploadFlow:
 
         with allure.step("Verify error is shown"):
             error = page.error_message()
-            assert "Błąd" in error
+            assert "Nieprawidłowy adres URL" in error
 
     @allure.story("Analysis page")
     @allure.severity(allure.severity_level.NORMAL)
