@@ -4,7 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class AnalysisPage:
-    _BACK_LINK       = (By.XPATH, "//a[contains(text(),'Nowa analiza')]")
+    _BACK_LINK       = (By.XPATH, "//a[@aria-label='Nowa analiza']")
     _UUID_LABEL      = (By.CSS_SELECTOR, "p.font-mono")
     _PROCESSING_MSG  = (By.XPATH, "//*[contains(text(),'Analizuję plik')]")
     _ERROR_HEADING   = (By.XPATH, "//*[contains(text(),'Błąd analizy')]")

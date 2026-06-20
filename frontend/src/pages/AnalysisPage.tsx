@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import type { Analysis } from '../types'
 import { fetchAnalysis } from '../api/client'
 import { useWebSocket } from '../hooks/useWebSocket'
@@ -54,15 +54,6 @@ export default function AnalysisPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <Link to="/" className="text-slate-500 hover:text-brand-400 text-sm transition-colors">
-            ← Nowa analiza
-          </Link>
-          <Link to="/history" className="text-slate-500 hover:text-brand-400 text-sm transition-colors">
-            Historia →
-          </Link>
-        </div>
-
         <div className="bg-slate-900 rounded-2xl shadow-2xl p-8">
           {state === 'loading' && (
             <p className="text-slate-400 text-center">Ładowanie…</p>

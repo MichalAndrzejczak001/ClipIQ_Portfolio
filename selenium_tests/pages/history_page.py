@@ -8,7 +8,7 @@ class HistoryPage:
     _SEARCH_INPUT   = (By.CSS_SELECTOR, "input[placeholder^='Szukaj']")
     _EMPTY_STATE    = (By.XPATH, "//*[contains(text(),'Brak analiz')]")
     _NO_RESULTS     = (By.XPATH, "//*[contains(text(),'Brak wyników dla')]")
-    _NEW_ANALYSIS_LINK = (By.XPATH, "//a[contains(text(),'Nowa analiza')]")
+    _NEW_ANALYSIS_LINK = (By.XPATH, "//a[@aria-label='Nowa analiza']")
 
     def __init__(self, driver, base_url: str):
         self._driver = driver

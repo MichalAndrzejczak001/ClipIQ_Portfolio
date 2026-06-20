@@ -11,7 +11,7 @@ class HomePage:
     _SUBMIT_BTN  = (By.XPATH, "//button[@type='submit']")
     _ERROR_MSG   = (By.CSS_SELECTOR, "p.text-red-400")
     _DROP_ZONE   = (By.XPATH, "//*[contains(text(),'Przeciągnij plik')]")
-    _HISTORY_LINK = (By.XPATH, "//a[contains(text(),'historię')]")
+    _HISTORY_LINK = (By.XPATH, "//a[@aria-label='Historia analiz']")
 
     def __init__(self, driver, base_url: str):
         self._driver = driver

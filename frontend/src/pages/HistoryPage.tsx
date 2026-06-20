@@ -81,9 +81,6 @@ export default function HistoryPage() {
     <div className="min-h-screen px-4 py-10 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-slate-100">Historia analiz</h2>
-        <Link to="/" className="text-brand-400 hover:text-brand-300 text-sm transition-colors">
-          + Nowa analiza
-        </Link>
       </div>
 
       <input

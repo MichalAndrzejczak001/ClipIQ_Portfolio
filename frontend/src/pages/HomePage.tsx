@@ -1,4 +1,4 @@
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import UploadForm from '../components/UploadForm'
 import { useAnalysisIdsRepository } from '../hooks/useAnalysisIdsRepository'
 
@@ -21,13 +21,6 @@ export default function HomePage() {
       <main className="w-full max-w-lg bg-slate-900 rounded-2xl shadow-2xl p-8">
         <UploadForm onSubmit={handleSubmit} />
       </main>
-
-      <Link
-        to="/history"
-        className="text-slate-500 hover:text-brand-400 text-sm mt-8 transition-colors"
-      >
-        Zobacz historię analiz →
-      </Link>
     </div>
   )
 }
