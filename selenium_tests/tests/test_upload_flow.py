@@ -2,6 +2,7 @@ import allure
 import pytest
 from pages.home_page import HomePage
 from pages.analysis_page import AnalysisPage
+from test_data import tiktok_url, youtube_url
 
 
 @allure.epic("ClipIQ")
@@ -16,7 +17,7 @@ class TestUploadFlow:
             page.switch_to_url_mode()
 
         with allure.step("Enter a valid YouTube URL and submit"):
-            page.enter_url("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+            page.enter_url(youtube_url())
             page.submit()
 
         with allure.step("Verify redirect to analysis page"):
@@ -32,7 +33,7 @@ class TestUploadFlow:
             page.switch_to_url_mode()
 
         with allure.step("Enter a valid TikTok URL and submit"):
-            page.enter_url("https://www.tiktok.com/@user/video/1234567890")
+            page.enter_url(tiktok_url())
             page.submit()
 
         with allure.step("Verify redirect to analysis page"):
@@ -74,7 +75,7 @@ class TestUploadFlow:
     def test_analysis_page_shows_back_link(self, driver, base_url):
         page = HomePage(driver, base_url).open()
         page.switch_to_url_mode()
-        page.enter_url("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        page.enter_url(youtube_url())
         page.submit()
 
         analysis = AnalysisPage(driver).wait_for_redirect()
@@ -85,7 +86,7 @@ class TestUploadFlow:
     def test_analysis_page_displays_uuid(self, driver, base_url):
         page = HomePage(driver, base_url).open()
         page.switch_to_url_mode()
-        page.enter_url("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        page.enter_url(youtube_url())
         page.submit()
 
         analysis = AnalysisPage(driver).wait_for_redirect()
