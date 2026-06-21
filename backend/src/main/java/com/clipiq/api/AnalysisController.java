@@ -6,6 +6,8 @@ import com.clipiq.model.Analysis;
 import com.clipiq.repository.AnalysisRepository;
 import com.clipiq.service.AnalysisService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class AnalysisController {
+
+    private static final Logger log = LoggerFactory.getLogger(AnalysisController.class);
 
     private static final List<String> ALLOWED_EXTENSIONS = List.of("mp3", "mp4");
     private static final Pattern ALLOWED_URL_PATTERN = Pattern.compile(
@@ -50,6 +54,7 @@ public class AnalysisController {
             String uuid = analysisService.registerFile(filename, file.getBytes());
             return ResponseEntity.ok(new RegisterResponse(uuid));
         } catch (Exception e) {
+            log.error("Failed to register file {}: {}", filename, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -67,6 +72,7 @@ public class AnalysisController {
             String uuid = analysisService.registerUrl(url);
             return ResponseEntity.ok(new RegisterResponse(uuid));
         } catch (Exception e) {
+            log.error("Failed to register URL {}: {}", url, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
