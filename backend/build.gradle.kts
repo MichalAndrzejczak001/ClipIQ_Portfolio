@@ -66,6 +66,7 @@ dependencies {
     testImplementation("io.rest-assured:spring-mock-mvc:5.3.2")
     testImplementation("io.rest-assured:json-schema-validator:5.3.2")
     testImplementation("org.testng:testng:7.8.0")
+    testImplementation("org.awaitility:awaitility:4.2.0")
     "agent"("org.aspectj:aspectjweaver:1.9.20.1")
 }
 
