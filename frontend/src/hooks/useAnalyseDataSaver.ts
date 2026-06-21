@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf'
+import type jsPDF from 'jspdf'
 import type { Analysis } from '../types'
 
 function writeField(doc: jsPDF, label: string, value: string, y: number): number {
@@ -15,7 +15,8 @@ function writeField(doc: jsPDF, label: string, value: string, y: number): number
 }
 
 export function useAnalyseDataSaver() {
-  const downloadPdf = (analysis: Analysis) => {
+  const downloadPdf = async (analysis: Analysis) => {
+    const { default: jsPDF } = await import('jspdf')
     const doc = new jsPDF()
 
     doc.setFillColor(14, 165, 233)

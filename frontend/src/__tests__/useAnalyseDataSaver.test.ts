@@ -38,25 +38,25 @@ describe('useAnalyseDataSaver', () => {
     jest.clearAllMocks()
   })
 
-  it('downloadPdf writes the header and saves with the analysis uuid in the filename', () => {
+  it('downloadPdf writes the header and saves with the analysis uuid in the filename', async () => {
     const { result } = renderHook(() => useAnalyseDataSaver())
-    result.current.downloadPdf(baseAnalysis)
+    await result.current.downloadPdf(baseAnalysis)
 
     expect(textMock).toHaveBeenCalledWith('ClipIQ — Wyniki analizy', 10, 13)
     expect(saveMock).toHaveBeenCalledWith('clipiq_uuid-123.pdf')
   })
 
-  it('downloadPdf includes summary and transcription when present', () => {
+  it('downloadPdf includes summary and transcription when present', async () => {
     const { result } = renderHook(() => useAnalyseDataSaver())
-    result.current.downloadPdf(baseAnalysis)
+    await result.current.downloadPdf(baseAnalysis)
 
     expect(textMock).toHaveBeenCalledWith('Streszczenie:', 10, expect.any(Number))
     expect(textMock).toHaveBeenCalledWith('Transkrypcja:', 10, expect.any(Number))
   })
 
-  it('downloadPdf skips optional fields when missing', () => {
+  it('downloadPdf skips optional fields when missing', async () => {
     const { result } = renderHook(() => useAnalyseDataSaver())
-    result.current.downloadPdf({
+    await result.current.downloadPdf({
       ...baseAnalysis,
       videoSummary: null,
       fullTranscription: null,
