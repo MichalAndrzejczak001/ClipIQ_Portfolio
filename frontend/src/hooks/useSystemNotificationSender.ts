@@ -1,7 +1,8 @@
+import { useCallback } from 'react'
 import type { Analysis } from '../types'
 
 export function useSystemNotificationSender() {
-  const sendNotification = (analysis: Analysis) => {
+  const sendNotification = useCallback((analysis: Analysis) => {
     const title = 'ClipIQ — analiza zakończona'
     const body = analysis.name
 
@@ -27,7 +28,7 @@ export function useSystemNotificationSender() {
     }
 
     alert(`${title}: ${body}`)
-  }
+  }, [])
 
   return { sendNotification }
 }

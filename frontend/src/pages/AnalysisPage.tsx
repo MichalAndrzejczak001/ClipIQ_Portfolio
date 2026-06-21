@@ -41,7 +41,7 @@ export default function AnalysisPage() {
     } else {
       setState('processing')
     }
-  }, [uuid])
+  }, [uuid, sendNotification])
 
   useEffect(() => { refresh() }, [refresh])
 
