@@ -8,6 +8,8 @@ const mockedRegisterUrl = apiClient.registerUrl as jest.MockedFunction<typeof ap
 const mockedRegisterFile = apiClient.registerFile as jest.MockedFunction<typeof apiClient.registerFile>
 
 describe('UploadForm', () => {
+  const user = userEvent.setup({ delay: null })
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -20,7 +22,7 @@ describe('UploadForm', () => {
 
   it('switches to URL mode', async () => {
     render(<UploadForm onSubmit={jest.fn()} />)
-    await userEvent.click(screen.getByText('Link (YouTube/TikTok)'))
+    await user.click(screen.getByText('Link (YouTube/TikTok)'))
     expect(screen.getByPlaceholderText(/youtube/i)).toBeInTheDocument()
   })
 
@@ -29,9 +31,9 @@ describe('UploadForm', () => {
     mockedRegisterUrl.mockResolvedValue({ data: { analysisUuid: 'uuid-123' } } as never)
 
     render(<UploadForm onSubmit={onSubmit} />)
-    await userEvent.click(screen.getByText('Link (YouTube/TikTok)'))
-    await userEvent.type(screen.getByPlaceholderText(/youtube/i), 'https://www.youtube.com/watch?v=abc')
-    await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
+    await user.click(screen.getByText('Link (YouTube/TikTok)'))
+    await user.type(screen.getByPlaceholderText(/youtube/i), 'https://www.youtube.com/watch?v=abc')
+    await user.click(screen.getByRole('button', { name: /Analizuj/ }))
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith('uuid-123'))
   })
@@ -40,9 +42,9 @@ describe('UploadForm', () => {
     mockedRegisterUrl.mockRejectedValue(new Error('Server error'))
 
     render(<UploadForm onSubmit={jest.fn()} />)
-    await userEvent.click(screen.getByText('Link (YouTube/TikTok)'))
-    await userEvent.type(screen.getByPlaceholderText(/youtube/i), 'https://www.youtube.com/watch?v=abc')
-    await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
+    await user.click(screen.getByText('Link (YouTube/TikTok)'))
+    await user.type(screen.getByPlaceholderText(/youtube/i), 'https://www.youtube.com/watch?v=abc')
+    await user.click(screen.getByRole('button', { name: /Analizuj/ }))
 
     await waitFor(() => expect(screen.getByText(/Błąd serwera/)).toBeInTheDocument())
   })
@@ -54,9 +56,9 @@ describe('UploadForm', () => {
     })
 
     render(<UploadForm onSubmit={jest.fn()} />)
-    await userEvent.click(screen.getByText('Link (YouTube/TikTok)'))
-    await userEvent.type(screen.getByPlaceholderText(/youtube/i), 'https://www.youtube.com/watch?v=abc')
-    await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
+    await user.click(screen.getByText('Link (YouTube/TikTok)'))
+    await user.type(screen.getByPlaceholderText(/youtube/i), 'https://www.youtube.com/watch?v=abc')
+    await user.click(screen.getByRole('button', { name: /Analizuj/ }))
 
     await waitFor(() =>
       expect(screen.getByText(/Nieprawidłowy adres URL/)).toBeInTheDocument(),
@@ -72,8 +74,8 @@ describe('UploadForm', () => {
     const { container } = render(<UploadForm onSubmit={jest.fn()} />)
     const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement
     const file = new File(['x'], 'huge-video.mp4', { type: 'video/mp4' })
-    await userEvent.upload(fileInput, file)
-    await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
+    await user.upload(fileInput, file)
+    await user.click(screen.getByRole('button', { name: /Analizuj/ }))
 
     await waitFor(() =>
       expect(screen.getByText(/Plik jest za duży/)).toBeInTheDocument(),
@@ -82,7 +84,7 @@ describe('UploadForm', () => {
 
   it('shows error when submitting file mode without selecting a file', async () => {
     render(<UploadForm onSubmit={jest.fn()} />)
-    await userEvent.click(screen.getByRole('button', { name: /Analizuj/ }))
+    await user.click(screen.getByRole('button', { name: /Analizuj/ }))
     expect(screen.getByText(/Wybierz plik/)).toBeInTheDocument()
     expect(mockedRegisterFile).not.toHaveBeenCalled()
   })
