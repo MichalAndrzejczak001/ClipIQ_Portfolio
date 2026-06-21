@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 load_dotenv()
 
-from routes import router
+from routes import router  # noqa: E402 — must call load_dotenv() before importing routes/ai so OPENAI_API_KEY is set
 
 
 @asynccontextmanager

@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
@@ -17,7 +18,7 @@ _MAX_FILE_BYTES = _MAX_FILE_SIZE_MB * 1024 * 1024
 
 
 @router.post("/transcribe", response_model=TranscribeResponse)
-async def transcribe(file: UploadFile = File(...)):
+async def transcribe(file: Annotated[UploadFile, File()]):
     if not file.filename:
         raise HTTPException(status_code=422, detail="Filename is required")
     if "." not in file.filename:
@@ -37,7 +38,7 @@ async def transcribe(file: UploadFile = File(...)):
         return TranscribeResponse(transcription=result)
     except Exception as e:
         logger.error("transcribe failed: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail="Transcription failed")
+        raise HTTPException(status_code=500, detail="Transcription failed") from e
 
 
 @router.post("/summarize", response_model=SummarizeResponse)
@@ -47,7 +48,7 @@ async def summarize(body: SummarizeRequest):
         return SummarizeResponse(summary=result)
     except Exception as e:
         logger.error("summarize failed: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail="Summarization failed")
+        raise HTTPException(status_code=500, detail="Summarization failed") from e
 
 
 @router.post("/sentiment", response_model=SentimentResponse)
@@ -57,4 +58,4 @@ async def sentiment(body: SentimentRequest):
         return SentimentResponse(sentiment=result)
     except Exception as e:
         logger.error("sentiment failed: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail="Sentiment analysis failed")
+        raise HTTPException(status_code=500, detail="Sentiment analysis failed") from e
