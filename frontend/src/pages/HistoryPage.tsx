@@ -116,25 +116,27 @@ export default function HistoryPage() {
         {filtered.map((analysis) => (
           <li
             key={analysis.uuid}
-            className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-brand-500 transition-colors flex items-center gap-4"
+            className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-brand-500 transition-colors flex flex-wrap sm:flex-nowrap items-center gap-3"
           >
-            <Link to={`/analysis/${analysis.uuid}`} className="flex-1 min-w-0">
+            <Link to={`/analysis/${analysis.uuid}`} className="flex-1 min-w-0 basis-full sm:basis-auto">
               <p className="text-slate-100 font-medium truncate">{analysis.name}</p>
               <p className="text-xs text-slate-500">
                 {new Date(analysis.startDate).toLocaleString('pl-PL')}
               </p>
             </Link>
-            {analysis.authorAttitude && <SentimentBadge attitude={analysis.authorAttitude} />}
-            <span className={`text-sm font-medium ${STATUS_CLASSES[analysis.status]}`}>
-              {STATUS_LABELS[analysis.status]}
-            </span>
-            <button
-              onClick={() => handleRemove(analysis.uuid)}
-              className="text-slate-500 hover:text-red-400 transition-colors"
-              aria-label="Usuń z historii"
-            >
-              ✕
-            </button>
+            <div className="flex items-center gap-3 ml-auto sm:ml-0">
+              {analysis.authorAttitude && <SentimentBadge attitude={analysis.authorAttitude} />}
+              <span className={`text-sm font-medium whitespace-nowrap ${STATUS_CLASSES[analysis.status]}`}>
+                {STATUS_LABELS[analysis.status]}
+              </span>
+              <button
+                onClick={() => handleRemove(analysis.uuid)}
+                className="text-slate-500 hover:text-red-400 transition-colors"
+                aria-label="Usuń z historii"
+              >
+                ✕
+              </button>
+            </div>
           </li>
         ))}
       </ul>

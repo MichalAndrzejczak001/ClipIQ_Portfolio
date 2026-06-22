@@ -54,7 +54,7 @@ export default function AnalysisPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-2xl">
-        <div className="bg-slate-900 rounded-2xl shadow-2xl p-8">
+        <div className="bg-slate-900 rounded-2xl shadow-2xl p-5 sm:p-8">
           {state === 'loading' && (
             <p className="text-slate-400 text-center">Ładowanie…</p>
           )}

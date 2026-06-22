@@ -66,7 +66,7 @@ export default function UploadForm({ onSubmit }: Props) {
 
       {mode === 'file' ? (
         <div
-          className="border-2 border-dashed border-slate-600 rounded-xl p-10 text-center cursor-pointer hover:border-brand-500 transition-colors"
+          className="border-2 border-dashed border-slate-600 rounded-xl p-6 sm:p-10 text-center cursor-pointer hover:border-brand-500 transition-colors"
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {

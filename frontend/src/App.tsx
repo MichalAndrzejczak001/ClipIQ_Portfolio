@@ -7,7 +7,7 @@ import HistoryPage from './pages/HistoryPage'
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         <Sidebar />
         <div className="flex-1">
           <Routes>
