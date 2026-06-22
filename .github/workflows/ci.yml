@@ -39,11 +39,25 @@ jobs:
         run: ./gradlew testNG --no-daemon
         working-directory: backend
 
+      - name: Generate Allure report
+        if: always()
+        run: |
+          curl -sL -o allure.zip https://github.com/allure-framework/allure2/releases/download/2.23.0/allure-2.23.0.zip
+          unzip -q allure.zip -d /opt
+          /opt/allure-2.23.0/bin/allure generate build/allure-results -o build/allure-report --clean
+        working-directory: backend
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: allure-results-backend
           path: backend/build/allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-report-backend
+          path: backend/build/allure-report
 
   ai-service:
     name: AI Service (FastAPI)
@@ -168,11 +182,31 @@ jobs:
         run: pytest tests/ -v --alluredir=allure-results
         working-directory: selenium_tests
 
+      - uses: actions/setup-java@v4
+        if: always() && steps.check.outputs.exists == 'true'
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Generate Allure report
+        if: always() && steps.check.outputs.exists == 'true'
+        run: |
+          curl -sL -o allure.zip https://github.com/allure-framework/allure2/releases/download/2.23.0/allure-2.23.0.zip
+          unzip -q allure.zip -d /opt
+          /opt/allure-2.23.0/bin/allure generate allure-results -o allure-report --clean
+        working-directory: selenium_tests
+
       - uses: actions/upload-artifact@v4
-        if: steps.check.outputs.exists == 'true'
+        if: always() && steps.check.outputs.exists == 'true'
         with:
           name: allure-results-selenium
           path: selenium_tests/allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.check.outputs.exists == 'true'
+        with:
+          name: allure-report-selenium
+          path: selenium_tests/allure-report
 
       - name: Stop application stack
         if: always() && steps.check.outputs.exists == 'true'
