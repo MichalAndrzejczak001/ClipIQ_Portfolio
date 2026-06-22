@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Analysis } from '../types'
-import { fetchAnalyses } from '../api/client'
+import { deleteAnalysis, fetchAnalyses } from '../api/client'
 import { useAnalysisIdsRepository } from '../hooks/useAnalysisIdsRepository'
 import SentimentBadge from '../components/SentimentBadge'
 
@@ -23,6 +23,7 @@ export default function HistoryPage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   useEffect(() => {
     if (uuids.length === 0) {
@@ -77,6 +78,16 @@ export default function HistoryPage() {
     )
   }, [analyses, search])
 
+  const handleRemove = async (uuid: string) => {
+    setDeleteError(null)
+    try {
+      await deleteAnalysis(uuid)
+      removeUuid(uuid)
+    } catch {
+      setDeleteError('Nie udało się usunąć analizy.')
+    }
+  }
+
   return (
     <div className="min-h-screen px-4 py-10 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -93,6 +104,7 @@ export default function HistoryPage() {
 
       {loading && <p className="text-slate-400">Ładowanie...</p>}
       {fetchError && <p className="text-red-400">{fetchError}</p>}
+      {deleteError && <p className="text-red-400">{deleteError}</p>}
       {!loading && !fetchError && uuids.length === 0 && (
         <p className="text-slate-500">Brak analiz. Rozpocznij nową analizę na stronie głównej.</p>
       )}
@@ -117,7 +129,7 @@ export default function HistoryPage() {
               {STATUS_LABELS[analysis.status]}
             </span>
             <button
-              onClick={() => removeUuid(analysis.uuid)}
+              onClick={() => handleRemove(analysis.uuid)}
               className="text-slate-500 hover:text-red-400 transition-colors"
               aria-label="Usuń z historii"
             >

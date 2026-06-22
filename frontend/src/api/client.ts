@@ -17,3 +17,5 @@ export const fetchAnalysis = (uuid: string) =>
 
 export const fetchAnalyses = (uuids: string[]) =>
   http.get<Analysis[]>('/analyse', { params: { uuids: uuids.join(',') } })
+
+export const deleteAnalysis = (uuid: string) => http.delete<void>(`/analyse/${uuid}`)

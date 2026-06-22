@@ -79,4 +79,31 @@ class AnalysisRepositoryTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void existsByUuid_existingUuid_returnsTrue() {
+        Analysis analysis = new Analysis();
+        analysis.setUuid("uuid-exists");
+        analysis.setStatus(Status.SUCCESS);
+        repository.save(analysis);
+
+        assertThat(repository.existsByUuid("uuid-exists")).isTrue();
+    }
+
+    @Test
+    void existsByUuid_unknownUuid_returnsFalse() {
+        assertThat(repository.existsByUuid("does-not-exist")).isFalse();
+    }
+
+    @Test
+    void deleteByUuid_existingUuid_removesDocument() {
+        Analysis analysis = new Analysis();
+        analysis.setUuid("uuid-to-delete");
+        analysis.setStatus(Status.SUCCESS);
+        repository.save(analysis);
+
+        repository.deleteByUuid("uuid-to-delete");
+
+        assertThat(repository.findByUuid("uuid-to-delete")).isEmpty();
+    }
 }

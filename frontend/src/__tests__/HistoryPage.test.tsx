@@ -9,6 +9,9 @@ jest.mock('../api/client')
 const mockedFetchAnalyses = apiClient.fetchAnalyses as jest.MockedFunction<
   typeof apiClient.fetchAnalyses
 >
+const mockedDeleteAnalysis = apiClient.deleteAnalysis as jest.MockedFunction<
+  typeof apiClient.deleteAnalysis
+>
 
 const sampleAnalyses: Analysis[] = [
   {
@@ -119,6 +122,7 @@ describe('HistoryPage', () => {
           data: sampleAnalyses.filter((a) => uuids.includes(a.uuid)),
         }) as never,
     )
+    mockedDeleteAnalysis.mockResolvedValue({} as never)
 
     renderHistoryPage()
     await screen.findByText('Video One')
@@ -126,6 +130,22 @@ describe('HistoryPage', () => {
     await userEvent.click(screen.getAllByLabelText('Usuń z historii')[0])
 
     await waitFor(() => expect(screen.queryByText('Video One')).not.toBeInTheDocument())
+    expect(mockedDeleteAnalysis).toHaveBeenCalledWith('uuid-1')
     expect(JSON.parse(localStorage.getItem('clipiq_analysis_uuids')!)).toEqual(['uuid-2'])
+  })
+
+  it('keeps the analysis in history when deleting fails on the server', async () => {
+    seedUuids(['uuid-1', 'uuid-2'])
+    mockedFetchAnalyses.mockResolvedValue({ data: sampleAnalyses } as never)
+    mockedDeleteAnalysis.mockRejectedValue(new Error('network error'))
+
+    renderHistoryPage()
+    await screen.findByText('Video One')
+
+    await userEvent.click(screen.getAllByLabelText('Usuń z historii')[0])
+
+    expect(await screen.findByText('Nie udało się usunąć analizy.')).toBeInTheDocument()
+    expect(screen.getByText('Video One')).toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem('clipiq_analysis_uuids')!)).toEqual(['uuid-1', 'uuid-2'])
   })
 })

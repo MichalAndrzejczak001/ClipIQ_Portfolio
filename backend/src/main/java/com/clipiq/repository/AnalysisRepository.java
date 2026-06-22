@@ -11,4 +11,8 @@ public interface AnalysisRepository extends MongoRepository<Analysis, String> {
     Optional<Analysis> findByUuid(String uuid);
 
     List<Analysis> findAllByUuidIn(List<String> uuids);
+
+    boolean existsByUuid(String uuid);
+
+    void deleteByUuid(String uuid);
 }
