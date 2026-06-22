@@ -118,6 +118,22 @@ class AnalysisServiceTest {
     }
 
     @Test
+    void process_whenSavingFailedStatusThrows_stillSendsFailedMessage() {
+        String uuid = "test-uuid-789";
+        Analysis analysis = new Analysis();
+        analysis.setUuid(uuid);
+        analysis.setRawFile(new byte[]{1, 2, 3});
+
+        when(analysisRepository.findByUuid(uuid)).thenReturn(Optional.of(analysis));
+        when(aiClientService.transcribe(any(), any())).thenThrow(new RuntimeException("AI unavailable"));
+        when(analysisRepository.save(any())).thenThrow(new RuntimeException("Mongo unavailable"));
+
+        analysisService.process(uuid);
+
+        verify(messagingTemplate).convertAndSend(eq("/topic/analysis/" + uuid + "/failed"), anyString());
+    }
+
+    @Test
     void process_unknownUuid_sendsFailedWithoutSaving() {
         String uuid = "does-not-exist";
         when(analysisRepository.findByUuid(uuid)).thenReturn(Optional.empty());

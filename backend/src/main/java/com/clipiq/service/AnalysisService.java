@@ -91,7 +91,12 @@ public class AnalysisService {
             if (analysis != null) {
                 analysis.setStatus(Status.FAILED);
                 analysis.setFinishDate(Instant.now());
-                analysisRepository.save(analysis);
+                try {
+                    analysisRepository.save(analysis);
+                } catch (Exception saveException) {
+                    log.error("Failed to persist FAILED status for analysis {}: {}",
+                            uuid, saveException.getMessage(), saveException);
+                }
             }
             messagingTemplate.convertAndSend(
                     "/topic/analysis/" + uuid + "/failed",
