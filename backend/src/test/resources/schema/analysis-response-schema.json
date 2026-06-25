@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["uuid", "status", "fileType"],
+  "properties": {
+    "uuid":              { "type": "string" },
+    "name":              { "type": ["string", "null"] },
+    "startDate":         { "type": ["string", "null"] },
+    "finishDate":        { "type": ["string", "null"] },
+    "status":            { "type": "string", "enum": ["IN_PROGRESS", "SUCCESS", "FAILED"] },
+    "fileType":          { "type": "string", "enum": ["RAW", "YOUTUBE", "TIKTOK"] },
+    "link":              { "type": ["string", "null"] },
+    "fullTranscription": { "type": ["string", "null"] },
+    "videoSummary":      { "type": ["string", "null"] },
+    "authorAttitude":    { "type": ["string", "null"], "enum": ["positive", "negative", "neutral", null] }
+  },
+  "additionalProperties": false
+}

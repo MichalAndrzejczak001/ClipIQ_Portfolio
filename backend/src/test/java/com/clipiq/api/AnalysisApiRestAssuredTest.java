@@ -1,5 +1,9 @@
 package com.clipiq.api;
 
+import com.clipiq.model.Analysis;
+import com.clipiq.model.AuthorAttitude;
+import com.clipiq.model.FileType;
+import com.clipiq.model.Status;
 import com.clipiq.repository.AnalysisRepository;
 import com.clipiq.service.AnalysisService;
 import com.github.javafaker.Faker;
@@ -19,6 +23,9 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.time.Instant;
+import java.util.Optional;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -82,6 +89,31 @@ public class AnalysisApiRestAssuredTest extends AbstractTestNGSpringContextTests
         .then()
             .statusCode(200)
             .body("analysisUuid", notNullValue());
+    }
+
+    @Test(groups = {"regression"})
+    @Story("Get analysis by uuid response matches JSON schema")
+    @Severity(SeverityLevel.CRITICAL)
+    public void getAnalysis_responseMatchesSchema() {
+        String uuid = faker.internet().uuid();
+        Analysis analysis = new Analysis();
+        analysis.setUuid(uuid);
+        analysis.setName(faker.lorem().word() + ".mp3");
+        analysis.setStartDate(Instant.now());
+        analysis.setFinishDate(Instant.now());
+        analysis.setStatus(Status.SUCCESS);
+        analysis.setFileType(FileType.RAW);
+        analysis.setFullTranscription(faker.lorem().paragraph());
+        analysis.setVideoSummary(faker.lorem().sentence());
+        analysis.setAuthorAttitude(AuthorAttitude.positive);
+        when(analysisRepository.findByUuid(uuid)).thenReturn(Optional.of(analysis));
+
+        given()
+        .when()
+            .get("/analyse/" + uuid)
+        .then()
+            .statusCode(200)
+            .body(matchesJsonSchemaInClasspath("schema/analysis-response-schema.json"));
     }
 
     @Test(groups = {"negative"})
