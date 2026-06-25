@@ -170,7 +170,9 @@ jobs:
 
       - name: Install Chrome
         if: steps.check.outputs.exists == 'true'
-        run: sudo apt-get update && sudo apt-get install -y google-chrome-stable
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y google-chrome-stable
 
       - name: Install dependencies
         if: steps.check.outputs.exists == 'true'
