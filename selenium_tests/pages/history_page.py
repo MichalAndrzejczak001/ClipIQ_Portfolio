@@ -60,6 +60,7 @@ class HistoryPage:
     def remove_entry(self, text_fragment: str) -> "HistoryPage":
         row = self._driver.find_element(By.XPATH, f"//li[contains(., '{text_fragment}')]")
         row.find_element(By.XPATH, ".//button[@aria-label='Usuń z historii']").click()
+        self._wait.until(EC.staleness_of(row))
         return self
 
     def go_to_new_analysis(self) -> "HistoryPage":
