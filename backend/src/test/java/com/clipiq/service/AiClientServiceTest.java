@@ -44,6 +44,17 @@ class AiClientServiceTest {
     }
 
     @Test
+    void transcribe_emptyResponse_throwsException() {
+        server.enqueue(new MockResponse()
+                .setBody("{\"transcription\":null}")
+                .addHeader("Content-Type", "application/json"));
+
+        assertThatThrownBy(() -> aiClientService.transcribe(new byte[]{1}, "audio.mp3"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("empty response");
+    }
+
+    @Test
     void transcribe_serverError_throwsException() {
         server.enqueue(new MockResponse().setResponseCode(500).setBody("Internal error"));
 
@@ -63,6 +74,17 @@ class AiClientServiceTest {
     }
 
     @Test
+    void summarize_emptyResponse_throwsException() {
+        server.enqueue(new MockResponse()
+                .setBody("{\"summary\":null}")
+                .addHeader("Content-Type", "application/json"));
+
+        assertThatThrownBy(() -> aiClientService.summarize("text"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("empty response");
+    }
+
+    @Test
     void summarize_serverError_throwsException() {
         server.enqueue(new MockResponse().setResponseCode(422).setBody("Unprocessable"));
 
@@ -79,6 +101,17 @@ class AiClientServiceTest {
         String result = aiClientService.getSentiment("great content");
 
         assertThat(result).isEqualTo("positive");
+    }
+
+    @Test
+    void getSentiment_emptyResponse_throwsException() {
+        server.enqueue(new MockResponse()
+                .setBody("{\"sentiment\":null}")
+                .addHeader("Content-Type", "application/json"));
+
+        assertThatThrownBy(() -> aiClientService.getSentiment("text"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("empty response");
     }
 
     @Test

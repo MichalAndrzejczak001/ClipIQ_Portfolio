@@ -30,7 +30,7 @@ public class AiClientService {
             }
         }).contentType(MediaType.parseMediaType("audio/mpeg"));
 
-        return webClient.post()
+        TranscribeResponse response = webClient.post()
                 .uri("/transcribe")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .bodyValue(builder.build())
@@ -41,12 +41,16 @@ public class AiClientService {
                                 .map(body -> new RuntimeException("AI transcribe error: " + body))
                 )
                 .bodyToMono(TranscribeResponse.class)
-                .map(TranscribeResponse::getTranscription)
                 .block();
+
+        if (response == null || response.getTranscription() == null) {
+            throw new RuntimeException("AI transcribe returned empty response");
+        }
+        return response.getTranscription();
     }
 
     public String summarize(String text) {
-        return webClient.post()
+        SummarizeResponse response = webClient.post()
                 .uri("/summarize")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new SummarizeRequest(text))
@@ -57,12 +61,16 @@ public class AiClientService {
                                 .map(body -> new RuntimeException("AI summarize error: " + body))
                 )
                 .bodyToMono(SummarizeResponse.class)
-                .map(SummarizeResponse::getSummary)
                 .block();
+
+        if (response == null || response.getSummary() == null) {
+            throw new RuntimeException("AI summarize returned empty response");
+        }
+        return response.getSummary();
     }
 
     public String getSentiment(String text) {
-        return webClient.post()
+        SentimentResponse response = webClient.post()
                 .uri("/sentiment")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new SentimentRequest(text))
@@ -73,7 +81,11 @@ public class AiClientService {
                                 .map(body -> new RuntimeException("AI sentiment error: " + body))
                 )
                 .bodyToMono(SentimentResponse.class)
-                .map(SentimentResponse::getSentiment)
                 .block();
+
+        if (response == null || response.getSentiment() == null) {
+            throw new RuntimeException("AI sentiment returned empty response");
+        }
+        return response.getSentiment();
     }
 }
