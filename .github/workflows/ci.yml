@@ -182,6 +182,11 @@ jobs:
         run: pytest tests/ -v --alluredir=allure-results
         working-directory: selenium_tests
 
+      - name: Run Behave BDD tests
+        if: steps.check.outputs.exists == 'true'
+        run: behave -f allure_behave.formatter:AllureFormatter -o allure-results
+        working-directory: selenium_tests/behave
+
       - uses: actions/setup-java@v4
         if: always() && steps.check.outputs.exists == 'true'
         with:
