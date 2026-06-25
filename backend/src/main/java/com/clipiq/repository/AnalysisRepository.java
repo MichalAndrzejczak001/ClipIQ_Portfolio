@@ -14,5 +14,5 @@ public interface AnalysisRepository extends MongoRepository<Analysis, String> {
 
     boolean existsByUuid(String uuid);
 
-    void deleteByUuid(String uuid);
+    long deleteByUuid(String uuid);
 }

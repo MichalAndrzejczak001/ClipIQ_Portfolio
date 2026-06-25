@@ -108,8 +108,8 @@ export default function HistoryPage() {
       {!loading && !fetchError && uuids.length === 0 && (
         <p className="text-slate-500">Brak analiz. Rozpocznij nową analizę na stronie głównej.</p>
       )}
-      {!loading && !fetchError && uuids.length > 0 && filtered.length === 0 && (
-        <p className="text-slate-500">Brak wyników dla: „{search}”</p>
+      {!loading && !fetchError && uuids.length > 0 && filtered.length === 0 && search.trim().length > 0 && (
+        <p className=”text-slate-500”>Brak wyników dla: „{search}”</p>
       )}
 
       <ul className="space-y-3">

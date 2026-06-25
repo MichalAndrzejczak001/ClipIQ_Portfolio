@@ -30,16 +30,21 @@ export default function AnalysisPage() {
 
   const refresh = useCallback(async () => {
     if (!uuid) return
-    const { data } = await fetchAnalysis(uuid)
-    setAnalysis(data)
-    if (data.status === 'SUCCESS') {
-      setState('done')
-      sendNotification(data)
-    } else if (data.status === 'FAILED') {
+    try {
+      const { data } = await fetchAnalysis(uuid)
+      setAnalysis(data)
+      if (data.status === 'SUCCESS') {
+        setState('done')
+        sendNotification(data)
+      } else if (data.status === 'FAILED') {
+        setState('failed')
+        setErrorMsg('Analiza nie powiodła się.')
+      } else {
+        setState('processing')
+      }
+    } catch {
       setState('failed')
-      setErrorMsg('Analiza nie powiodła się.')
-    } else {
-      setState('processing')
+      setErrorMsg('Nie udało się pobrać wyników analizy.')
     }
   }, [uuid, sendNotification])
 

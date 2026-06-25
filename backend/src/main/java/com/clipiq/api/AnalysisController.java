@@ -105,10 +105,10 @@ public class AnalysisController {
 
     @DeleteMapping("/analyse/{uuid}")
     public ResponseEntity<Void> deleteAnalysis(@PathVariable String uuid) {
-        if (!analysisRepository.existsByUuid(uuid)) {
+        long deleted = analysisRepository.deleteByUuid(uuid);
+        if (deleted == 0) {
             return ResponseEntity.notFound().build();
         }
-        analysisRepository.deleteByUuid(uuid);
         return ResponseEntity.noContent().build();
     }
 

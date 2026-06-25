@@ -61,6 +61,10 @@ public class AnalysisService {
             analysis = analysisRepository.findByUuid(uuid)
                     .orElseThrow(() -> new RuntimeException("Analysis not found: " + uuid));
 
+            if (analysis.getStatus() == Status.SUCCESS || analysis.getStatus() == Status.FAILED) {
+                return;
+            }
+
             sendProgress(uuid, "0");
 
             byte[] audioBytes = resolveAudio(analysis);

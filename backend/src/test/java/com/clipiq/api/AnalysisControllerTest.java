@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -146,23 +143,19 @@ class AnalysisControllerTest {
     }
 
     @Test
-    void deleteAnalysis_existingUuid_returns204AndDeletes() throws Exception {
-        when(analysisRepository.existsByUuid("uuid-abc")).thenReturn(true);
+    void deleteAnalysis_existingUuid_returns204() throws Exception {
+        when(analysisRepository.deleteByUuid("uuid-abc")).thenReturn(1L);
 
         mockMvc.perform(delete("/analyse/uuid-abc"))
                 .andExpect(status().isNoContent());
-
-        verify(analysisRepository).deleteByUuid("uuid-abc");
     }
 
     @Test
-    void deleteAnalysis_unknownUuid_returns404AndDoesNotDelete() throws Exception {
-        when(analysisRepository.existsByUuid("unknown-uuid")).thenReturn(false);
+    void deleteAnalysis_unknownUuid_returns404() throws Exception {
+        when(analysisRepository.deleteByUuid("unknown-uuid")).thenReturn(0L);
 
         mockMvc.perform(delete("/analyse/unknown-uuid"))
                 .andExpect(status().isNotFound());
-
-        verify(analysisRepository, never()).deleteByUuid(anyString());
     }
 
     @Test
