@@ -186,8 +186,8 @@ jobs:
 
       - name: Run Behave BDD tests
         if: steps.check.outputs.exists == 'true'
-        run: PYTHONPATH=. behave --no-capture behave/features -f allure_behave.formatter:AllureFormatter -o allure-results
-        working-directory: selenium_tests
+        run: PYTHONPATH=.. behave --no-capture features -f allure_behave.formatter:AllureFormatter -o ../allure-results
+        working-directory: selenium_tests/behave
 
       - uses: actions/setup-java@v4
         if: always() && steps.check.outputs.exists == 'true'
