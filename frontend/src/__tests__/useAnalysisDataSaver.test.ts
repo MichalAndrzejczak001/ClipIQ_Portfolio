@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react'
-import { useAnalyseDataSaver } from '../hooks/useAnalyseDataSaver'
+import { useAnalysisDataSaver } from '../hooks/useAnalysisDataSaver'
 import type { Analysis } from '../types'
 
 const saveMock = jest.fn()
@@ -33,13 +33,13 @@ const baseAnalysis: Analysis = {
   authorAttitude: 'positive',
 }
 
-describe('useAnalyseDataSaver', () => {
+describe('useAnalysisDataSaver', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('downloadPdf writes the header and saves with the analysis uuid in the filename', async () => {
-    const { result } = renderHook(() => useAnalyseDataSaver())
+    const { result } = renderHook(() => useAnalysisDataSaver())
     await result.current.downloadPdf(baseAnalysis)
 
     expect(textMock).toHaveBeenCalledWith('ClipIQ — Wyniki analizy', 10, 13)
@@ -47,7 +47,7 @@ describe('useAnalyseDataSaver', () => {
   })
 
   it('downloadPdf includes summary and transcription when present', async () => {
-    const { result } = renderHook(() => useAnalyseDataSaver())
+    const { result } = renderHook(() => useAnalysisDataSaver())
     await result.current.downloadPdf(baseAnalysis)
 
     expect(textMock).toHaveBeenCalledWith('Streszczenie:', 10, expect.any(Number))
@@ -55,7 +55,7 @@ describe('useAnalyseDataSaver', () => {
   })
 
   it('downloadPdf skips optional fields when missing', async () => {
-    const { result } = renderHook(() => useAnalyseDataSaver())
+    const { result } = renderHook(() => useAnalysisDataSaver())
     await result.current.downloadPdf({
       ...baseAnalysis,
       videoSummary: null,
@@ -73,7 +73,7 @@ describe('useAnalyseDataSaver', () => {
     const writeText = jest.fn().mockResolvedValue(undefined)
     Object.assign(navigator, { clipboard: { writeText } })
 
-    const { result } = renderHook(() => useAnalyseDataSaver())
+    const { result } = renderHook(() => useAnalysisDataSaver())
     await result.current.copySummary(baseAnalysis)
 
     expect(writeText).toHaveBeenCalledWith('Short summary.')
@@ -83,7 +83,7 @@ describe('useAnalyseDataSaver', () => {
     const writeText = jest.fn().mockResolvedValue(undefined)
     Object.assign(navigator, { clipboard: { writeText } })
 
-    const { result } = renderHook(() => useAnalyseDataSaver())
+    const { result } = renderHook(() => useAnalysisDataSaver())
     await result.current.copySummary({ ...baseAnalysis, videoSummary: null })
 
     expect(writeText).not.toHaveBeenCalled()
@@ -94,7 +94,7 @@ describe('useAnalyseDataSaver', () => {
     Object.assign(navigator, { clipboard: { writeText } })
     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {})
 
-    const { result } = renderHook(() => useAnalyseDataSaver())
+    const { result } = renderHook(() => useAnalysisDataSaver())
     await result.current.copySummary(baseAnalysis)
 
     expect(alertMock).toHaveBeenCalledWith('Short summary.')

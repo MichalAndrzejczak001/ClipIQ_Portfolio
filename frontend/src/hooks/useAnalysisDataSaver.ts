@@ -9,12 +9,20 @@ function writeField(doc: jsPDF, label: string, value: string, y: number): number
   doc.setTextColor(2, 132, 199)
   doc.text(`${label}:`, 10, y)
   doc.setTextColor(30, 30, 30)
-  const lines = doc.splitTextToSize(value, 180)
-  doc.text(lines, 10, y + 6)
-  return y + 6 + lines.length * 6 + 4
+  const lines = doc.splitTextToSize(value, 180) as string[]
+  let lineY = y + 6
+  for (const line of lines) {
+    if (lineY > 280) {
+      doc.addPage()
+      lineY = 20
+    }
+    doc.text(line, 10, lineY)
+    lineY += 6
+  }
+  return lineY + 4
 }
 
-export function useAnalyseDataSaver() {
+export function useAnalysisDataSaver() {
   const downloadPdf = async (analysis: Analysis) => {
     const { default: jsPDF } = await import('jspdf')
     const doc = new jsPDF()

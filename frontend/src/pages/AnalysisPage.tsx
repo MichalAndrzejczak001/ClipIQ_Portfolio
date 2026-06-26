@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import type { Analysis } from '../types'
 import { fetchAnalysis } from '../api/client'
 import { useWebSocket } from '../hooks/useWebSocket'
-import { useAnalyseDataSaver } from '../hooks/useAnalyseDataSaver'
+import { useAnalysisDataSaver } from '../hooks/useAnalysisDataSaver'
 import { useSystemNotificationSender } from '../hooks/useSystemNotificationSender'
 import ResultCard from '../components/ResultCard'
 
@@ -25,7 +25,7 @@ export default function AnalysisPage() {
   const [errorMsg, setErrorMsg] = useState('')
   const [progress, setProgress] = useState(0)
 
-  const { downloadPdf, copySummary } = useAnalyseDataSaver()
+  const { downloadPdf, copySummary } = useAnalysisDataSaver()
   const { sendNotification } = useSystemNotificationSender()
 
   const refresh = useCallback(async () => {
