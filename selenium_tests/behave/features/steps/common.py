@@ -1,15 +1,15 @@
-from behave import given, when, then
+from behave import step, then, when
 from pages.history_page import HistoryPage
 from pages.home_page import HomePage
 
 
-@given('I am on the home page')
+@step('I am on the home page')
 def step_open_home_page(context):
     context.home_page = HomePage(context.driver, context.base_url).open()
 
 
-@given('I am on the history page')
-def step_open_history_page_given(context):
+@step('I am on the history page')
+def step_open_history_page(context):
     context.history_page = HistoryPage(context.driver, context.base_url).open()
 
 
