@@ -5,17 +5,15 @@ import traceback
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))
-
 
 def before_all(context):
     context.base_url = os.environ.get('BASE_URL', 'http://localhost:3000')
-    print(f"\n[behave] before_all: base_url={context.base_url}")
+    sys.stderr.write(f"[behave] before_all: base_url={context.base_url}\n")
 
 
 def before_scenario(context, scenario):
     context.base_url = os.environ.get('BASE_URL', 'http://localhost:3000')
-    print(f"\n[behave] before_scenario: {scenario.name}")
+    sys.stderr.write(f"[behave] before_scenario: {scenario.name}\n")
     try:
         options = Options()
         options.add_argument('--headless')
@@ -24,10 +22,10 @@ def before_scenario(context, scenario):
         options.add_argument('--window-size=1280,800')
         context.driver = webdriver.Chrome(options=options)
         context.driver.implicitly_wait(10)
-        print("[behave] Chrome started OK")
+        sys.stderr.write("[behave] Chrome started OK\n")
     except Exception as e:
-        print(f"[behave] Chrome FAILED: {type(e).__name__}: {e}")
-        traceback.print_exc()
+        sys.stderr.write(f"[behave] Chrome FAILED: {type(e).__name__}: {e}\n")
+        traceback.print_exc(file=sys.stderr)
         raise
 
 
