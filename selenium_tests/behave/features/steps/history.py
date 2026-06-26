@@ -7,7 +7,7 @@ from pages.home_page import HomePage
 @when('I navigate to the history page')
 def step_navigate_to_history(context):
     context.home_page.go_to_history()
-    context.history_page = HistoryPage(context.driver, context.base_url)
+    context.history_page = HistoryPage(context.driver, context.base_url).wait_for_load()
 
 
 @when('I open the history page')
@@ -18,7 +18,7 @@ def step_open_history(context):
 @when('I go to the new analysis page')
 def step_go_to_new_analysis(context):
     context.history_page.go_to_new_analysis()
-    context.home_page = HomePage(context.driver, context.base_url)
+    context.home_page = HomePage(context.driver, context.base_url).wait_for_load()
 
 
 @when('the analysis page loads')

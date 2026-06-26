@@ -20,6 +20,10 @@ class HistoryPage:
         self._wait.until(EC.presence_of_element_located(self._TITLE))
         return self
 
+    def wait_for_load(self) -> "HistoryPage":
+        self._wait.until(EC.presence_of_element_located(self._TITLE))
+        return self
+
     def title_text(self) -> str:
         return self._driver.find_element(*self._TITLE).text
 
