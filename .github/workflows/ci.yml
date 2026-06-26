@@ -186,9 +186,7 @@ jobs:
 
       - name: Run Behave BDD tests
         if: steps.check.outputs.exists == 'true'
-        run: |
-          python3 -c "import selenium; print('selenium:', selenium.__version__)"
-          PYTHONPATH=.. behave features 2>&1
+        run: PYTHONPATH=.. behave -f allure_behave.formatter:AllureFormatter -o ../allure-results
         working-directory: selenium_tests/behave
 
       - uses: actions/setup-java@v4
