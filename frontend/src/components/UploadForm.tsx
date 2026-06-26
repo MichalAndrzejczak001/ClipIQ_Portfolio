@@ -72,7 +72,13 @@ export default function UploadForm({ onSubmit }: Props) {
           onDrop={(e) => {
             e.preventDefault()
             const f = e.dataTransfer.files[0]
-            if (f) setFile(f)
+            if (!f) return
+            const ext = f.name.split('.').pop()?.toLowerCase()
+            if (ext !== 'mp3' && ext !== 'mp4') {
+              setError('Niewspierany format. Użyj pliku MP3 lub MP4.')
+              return
+            }
+            setFile(f)
           }}
         >
           <input
