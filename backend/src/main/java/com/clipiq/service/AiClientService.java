@@ -5,6 +5,7 @@ import com.clipiq.dto.SentimentResponse;
 import com.clipiq.dto.SummarizeRequest;
 import com.clipiq.dto.SummarizeResponse;
 import com.clipiq.dto.TranscribeResponse;
+import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
@@ -50,42 +51,33 @@ public class AiClientService {
     }
 
     public String summarize(String text) {
-        SummarizeResponse response = webClient.post()
-                .uri("/summarize")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new SummarizeRequest(text))
-                .retrieve()
-                .onStatus(
-                        status -> status.isError(),
-                        resp -> resp.bodyToMono(String.class)
-                                .map(body -> new RuntimeException("AI summarize error: " + body))
-                )
-                .bodyToMono(SummarizeResponse.class)
-                .block();
-
-        if (response == null || response.getSummary() == null) {
-            throw new RuntimeException("AI summarize returned empty response");
-        }
-        return response.getSummary();
+        return postJson("/summarize", new SummarizeRequest(text),
+                SummarizeResponse.class, SummarizeResponse::getSummary, "summarize");
     }
 
     public String getSentiment(String text) {
-        SentimentResponse response = webClient.post()
-                .uri("/sentiment")
+        return postJson("/sentiment", new SentimentRequest(text),
+                SentimentResponse.class, SentimentResponse::getSentiment, "sentiment");
+    }
+
+    private <B, R> String postJson(String uri, B requestBody, Class<R> responseType,
+                                   Function<R, String> extractor, String operationName) {
+        R response = webClient.post()
+                .uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new SentimentRequest(text))
+                .bodyValue(requestBody)
                 .retrieve()
                 .onStatus(
                         status -> status.isError(),
                         resp -> resp.bodyToMono(String.class)
-                                .map(body -> new RuntimeException("AI sentiment error: " + body))
+                                .map(body -> new RuntimeException("AI " + operationName + " error: " + body))
                 )
-                .bodyToMono(SentimentResponse.class)
+                .bodyToMono(responseType)
                 .block();
 
-        if (response == null || response.getSentiment() == null) {
-            throw new RuntimeException("AI sentiment returned empty response");
+        if (response == null || extractor.apply(response) == null) {
+            throw new RuntimeException("AI " + operationName + " returned empty response");
         }
-        return response.getSentiment();
+        return extractor.apply(response);
     }
 }
