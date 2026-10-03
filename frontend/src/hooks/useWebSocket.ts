@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
@@ -10,8 +10,6 @@ interface Options {
 }
 
 export function useWebSocket({ uuid, onProgress, onDone, onFailed }: Options) {
-  const clientRef = useRef<Client | null>(null)
-
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () => new SockJS('/ws') as WebSocket,
@@ -29,7 +27,6 @@ export function useWebSocket({ uuid, onProgress, onDone, onFailed }: Options) {
       reconnectDelay: 0,
     })
     client.activate()
-    clientRef.current = client
 
     return () => {
       client.deactivate()
