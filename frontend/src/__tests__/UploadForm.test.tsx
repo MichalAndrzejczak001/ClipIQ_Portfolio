@@ -49,7 +49,7 @@ describe('UploadForm', () => {
     await waitFor(() => expect(screen.getByText(/Błąd serwera/)).toBeInTheDocument())
   })
 
-  it('shows a specific message for unsupported file format (HTTP 400)', async () => {
+  it('shows a specific message for an invalid URL (HTTP 400)', async () => {
     mockedRegisterUrl.mockRejectedValue({
       isAxiosError: true,
       response: { status: 400 },
@@ -62,6 +62,23 @@ describe('UploadForm', () => {
 
     await waitFor(() =>
       expect(screen.getByText(/Nieprawidłowy adres URL/)).toBeInTheDocument(),
+    )
+  })
+
+  it('shows a specific message for an unsupported or corrupted file (HTTP 400)', async () => {
+    mockedRegisterFile.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 400 },
+    })
+
+    const { container } = render(<UploadForm onSubmit={jest.fn()} />)
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement
+    const file = new File(['x'], 'broken.mp3', { type: 'audio/mpeg' })
+    await user.upload(fileInput, file)
+    await user.click(screen.getByRole('button', { name: /Analizuj/ }))
+
+    await waitFor(() =>
+      expect(screen.getByText(/Niewspierany format pliku lub uszkodzony plik/)).toBeInTheDocument(),
     )
   })
 
