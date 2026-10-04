@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 load_dotenv()
 
-from routes import router  # noqa: E402 — must call load_dotenv() before importing routes/ai so OPENAI_API_KEY is set
+from routes import router  # noqa: E402 — routes reads MAX_FILE_SIZE_MB at import time, so .env must be loaded first
 
 
 @asynccontextmanager

@@ -1,6 +1,9 @@
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, StringConstraints
+
+# Leading/trailing whitespace is stripped before the length checks, so "   " is rejected as empty.
+InputText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50_000)]
 
 
 class TranscribeResponse(BaseModel):
@@ -8,7 +11,7 @@ class TranscribeResponse(BaseModel):
 
 
 class SummarizeRequest(BaseModel):
-    text: str = Field(min_length=1, max_length=50_000)
+    text: InputText
 
 
 class SummarizeResponse(BaseModel):
@@ -16,7 +19,7 @@ class SummarizeResponse(BaseModel):
 
 
 class SentimentRequest(BaseModel):
-    text: str = Field(min_length=1, max_length=50_000)
+    text: InputText
 
 
 class SentimentResponse(BaseModel):
