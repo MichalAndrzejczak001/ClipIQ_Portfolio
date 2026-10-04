@@ -58,3 +58,16 @@ def test_transcribe_file_too_large(client: TestClient) -> None:
         )
 
     assert response.status_code == 413
+
+
+def test_transcribe_openai_error_returns_500(client: TestClient) -> None:
+    failing_client = MagicMock()
+    failing_client.audio.transcriptions.create.side_effect = RuntimeError("OpenAI unavailable")
+    with patch("ai._openai", return_value=failing_client):
+        response: httpx.Response = client.post(
+            "/transcribe",
+            files={"file": ("audio.mp3", b"fake audio data", "audio/mpeg")},
+        )
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Transcription failed"}
