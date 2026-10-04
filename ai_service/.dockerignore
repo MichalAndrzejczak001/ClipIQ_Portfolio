@@ -1,0 +1,20 @@
+# Secrets — OPENAI_API_KEY is injected at runtime via docker-compose env_file
+.env
+.env.*
+
+# Tests and dev tooling (not needed at runtime; requirements-dev.txt is never installed in the image)
+tests/
+requirements-dev.txt
+pytest.ini
+ruff.toml
+
+# Caches and virtualenvs
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Docker build files
+Dockerfile
+.dockerignore

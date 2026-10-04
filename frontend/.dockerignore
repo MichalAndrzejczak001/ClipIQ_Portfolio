@@ -1,0 +1,16 @@
+# Dependencies are installed inside the image by `npm ci` — host node_modules
+# (possibly built for another OS) must not overwrite them via `COPY . .`
+node_modules/
+
+# Build output and test artifacts
+dist/
+coverage/
+
+# Secrets and logs
+.env
+.env.*
+*.log
+
+# Docker build files
+Dockerfile
+.dockerignore
